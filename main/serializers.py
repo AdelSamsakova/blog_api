@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Category, Tag, Post
+from .models import Category, Tag, Post, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,4 +55,24 @@ class PostSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['category'] = CategorySerializer(instance.category, context=self.context).data
         representation['tags'] = TagSerializer(instance.tags.all(), many=True, context=self.context).data
+        representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
         return representation
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+    def validate_rating(self, rating):
+        if not rating in range(1, 6):
+            raise(serializers.ValidationError('Укажите рейтинг от 1 до 5'))
+        return rating
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+        comment = Comment.objects.create(user=user, **validated_data)
+        return comment

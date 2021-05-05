@@ -1,17 +1,15 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView
+from rest_framework.decorators import api_view, action
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.reverse import reverse
+from rest_framework.permissions import IsAuthenticated
 
-from .models import Category, Tag, Post
+from .models import Category, Tag, Post, Comment
 from .permission import IsAdminPermission, IsAuthorPermission
-from .serializers import CategorySerializer, TagSerializer, PostSerializer
+from .serializers import CategorySerializer, TagSerializer, PostSerializer, CommentSerializer
 
 
 @api_view()
@@ -52,6 +50,15 @@ class PostViewSet(ModelViewSet):
     search_fields = ['title', 'text', 'tags__title']
     ordering_fields = ['created_at', 'title']
 
+    # api/v1/posts/slug/
+    # api/v1/posts/slug/comments
+    @action(['GET'], detail=True)
+    def comments(self, request, slug=None):
+        post = self.get_object()
+        comments = post.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
     def get_permissions(self):
         if self.action == 'create':
             permissions = [IsAdminPermission]
@@ -64,11 +71,6 @@ class PostViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'request': self.request, 'action': self.action}
 
-    # def get_serializer_class(self):
-    #     if self.action == 'list':
-    #         return PostsListSerializer
-    #     return PostSerializer
-
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -79,3 +81,7 @@ def api_root(request, format=None):
     })
 
 
+class CommentCreateView(CreateAPIView):
+    queryset = Comment.objects.none()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, ]

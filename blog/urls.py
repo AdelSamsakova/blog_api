@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
-from main.views import CategoriesListView, TagsListView, PostViewSet, api_root
+from main.views import CategoriesListView, TagsListView, PostViewSet, api_root, CommentCreateView
 
 router = DefaultRouter()
 router.register('posts', PostViewSet)
@@ -31,4 +31,5 @@ urlpatterns = [
     path('', api_root),
     path('api/v1/categories/', CategoriesListView.as_view(), name='categories-list'),
     path('api/v1/tags/', TagsListView.as_view(), name='tags-list'),
+    path('api/v1/comments', CommentCreateView.as_view(), name='create-comment'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
