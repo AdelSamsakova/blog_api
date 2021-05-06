@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Category, Tag, Post, Comment
+from .models import Category, Tag, Post, Comment, Like
 from .permission import IsAdminPermission, IsAuthorPermission
 from .serializers import CategorySerializer, TagSerializer, PostSerializer, CommentSerializer
 
@@ -59,11 +59,27 @@ class PostViewSet(ModelViewSet):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
+    @action(['POST'], detail=True)
+    def like(self, request, slug=None):
+        post = self.get_object()
+        user = request.user
+        try:
+            like = Like.objects.get(post=post, user=user)
+            like.is_liked = not like.is_liked
+            like.save()
+            message = 'liked' if like.is_liked else 'disliked'
+        except Like.DoesNotExist:
+            Like.objects.create(post=post, user=user, is_liked=True)
+            message = 'liked'
+        return Response(message, status=200)
+
     def get_permissions(self):
         if self.action == 'create':
             permissions = [IsAdminPermission]
         elif self.action in ['update', 'partial_update', 'destroy']:
             permissions = [IsAuthorPermission]
+        elif self.action == 'like':
+            permissions = [IsAuthenticated]
         else:
             permissions = []
         return [perm() for perm in permissions]

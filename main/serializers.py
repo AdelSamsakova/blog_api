@@ -56,6 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
         representation['category'] = CategorySerializer(instance.category, context=self.context).data
         representation['tags'] = TagSerializer(instance.tags.all(), many=True, context=self.context).data
         representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
+        representation['likes_count'] = instance.likes.count()
         return representation
 
 

@@ -72,3 +72,9 @@ class Comment(models.Model):
                 name='rating_range'
             )
         ]
+
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
+    is_liked = models.BooleanField(default=False)

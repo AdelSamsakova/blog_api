@@ -13,9 +13,9 @@ PUT, PATCH - update
 DELETE - destroy
 
 ________________________________________________________________________________________________________________________
-#TODO: Сделать документацию
-#TODO: сделать избранное
+#TODO: сделать избранное(лайки)
 #TODO: сделать комментарии
+#TODO: сделать отдельный сериалайзер для листинга постов
 #TODO: Сделать восстановление/смену пароля
 #TODO: сделать пояснения к коду
 #TODO: сделать пошаговый документ
@@ -26,3 +26,22 @@ serializers.Serializer
 ________________________________________________________________________________________________________________________
 Откат миграции:
 migrate application и название миграции
+
+________________________________________________________________________________________________________________________
+action - create, update, partial_update, destroy, list, retrieve
+methods - POST     PUT     PATCH           DELETE   GET    GET
+
+CRUD (CREATE READ UPDATE DELETE)/(CREATE RETRIEVE UPDATE DESTROY)
+
+router.register('posts', PostViewSet)
+path('api/v1/', include(router.urls))
+POST - api/v1/posts/ - создание
+GET - api/v1/posts/ - листинг
+GET - api/v1/posts/pk(slug) - детали
+PUT/PATCH - api/v1/posts/pk(slug) - изменение
+DELETE - api/v1/posts/pk(slug) - удаление
+
+________________________________________________________________________________________________________________________
+Аутентификация - BasicAuth - username/password
+                 TokenAuth - токен ключ. Для поддтверждения ключ Authorization: { token: 'awawkdkj8j2380129302989301239289'}
+                 Session - состояние пользователя хранится в сессии
