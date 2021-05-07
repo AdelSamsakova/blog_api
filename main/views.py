@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Category, Tag, Post, Comment, Like
 from .permission import IsAdminPermission, IsAuthorPermission
-from .serializers import CategorySerializer, TagSerializer, PostSerializer, CommentSerializer
+from .serializers import CategorySerializer, TagSerializer, PostSerializer, CommentSerializer, PostListSerializer
 
 
 @api_view()
@@ -72,6 +72,11 @@ class PostViewSet(ModelViewSet):
             Like.objects.create(post=post, user=user, is_liked=True)
             message = 'liked'
         return Response(message, status=200)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return PostListSerializer
+        return self.serializer_class
 
     def get_permissions(self):
         if self.action == 'create':

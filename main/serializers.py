@@ -26,7 +26,6 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    details = serializers.HyperlinkedIdentityField(view_name='post-detail', lookup_field='slug')
 
     class Meta:
         model = Post
@@ -43,12 +42,7 @@ class PostSerializer(serializers.ModelSerializer):
     def get_fields(self):
         action = self.context.get('action')
         fields = super().get_fields()
-        if action == 'list':
-            fields.pop('text')
-            fields.pop('tags')
-            fields.pop('category')
-            fields.pop('created_at')
-        elif action == 'create':
+        if action == 'create':
             fields.pop('slug')
             fields.pop('author')
         return fields
@@ -60,6 +54,14 @@ class PostSerializer(serializers.ModelSerializer):
         representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
         representation['likes_count'] = instance.likes.count()
         return representation
+
+
+class PostListSerializer(serializers.ModelSerializer):
+    details = serializers.HyperlinkedIdentityField(view_name='post-detail', lookup_field='slug')
+
+    class Meta:
+        model = Post
+        fields = ['title', 'slug', 'image', 'created_at', 'details', ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
