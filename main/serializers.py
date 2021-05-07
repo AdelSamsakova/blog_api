@@ -35,7 +35,9 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user
+        tags = validated_data.pop('tags', [])
         post = Post.objects.create(author=user, **validated_data)
+        post.tags.add(*tags)
         return post
 
     def get_fields(self):

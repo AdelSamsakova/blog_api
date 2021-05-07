@@ -28,8 +28,8 @@ ________________________________________________________________________________
 migrate application и название миграции
 
 ________________________________________________________________________________________________________________________
-action - create, update, partial_update, destroy, list, retrieve
-methods - POST     PUT     PATCH           DELETE   GET    GET
+action - create,  update, partial_update, destroy, list, retrieve
+methods - POST     PUT        PATCH        DELETE   GET    GET
 
 CRUD (CREATE READ UPDATE DELETE)/(CREATE RETRIEVE UPDATE DESTROY)
 
